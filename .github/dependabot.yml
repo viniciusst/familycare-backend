@@ -14,14 +14,17 @@ updates:
       prefix: "chore(deps)"
       include: "scope"
     groups:
-      microsoft:
+      # All Microsoft / EF Core / Npgsql packages share transitive
+      # dependencies on Microsoft.Extensions.*, so they MUST be
+      # updated together — otherwise you get NU1605 downgrade errors
+      # when only some of them bump.
+      dotnet-platform:
         patterns:
           - "Microsoft.*"
-      ef-core:
-        patterns:
-          - "Microsoft.EntityFrameworkCore*"
+          - "Npgsql*"
           - "EFCore.*"
-          - "Npgsql.*"
+          - "System.IdentityModel.*"
+          - "System.Security.Cryptography.*"
       test-tooling:
         patterns:
           - "xunit*"
@@ -29,6 +32,7 @@ updates:
           - "FluentAssertions*"
           - "AutoFixture*"
           - "Testcontainers*"
+          - "coverlet.*"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -43,6 +47,10 @@ updates:
     commit-message:
       prefix: "chore(ci)"
       include: "scope"
+    groups:
+      gh-actions:
+        patterns:
+          - "*"
 
   # Docker base images
   - package-ecosystem: "docker"
