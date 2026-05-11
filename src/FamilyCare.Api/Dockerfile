@@ -6,9 +6,17 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copy csproj and sln files first to leverage Docker layer cache for restore
-# (only sources changed? Skip restore on rebuild.)
+# Copy csproj, sln, and Directory.*.props first to leverage Docker layer cache
+# for the restore step (only sources changed? Skip restore on rebuild).
+#
+# Directory.Packages.props is REQUIRED here because we use Central Package
+# Management — without it, dotnet restore fails with NU1015 ("PackageReference
+# items do not have a version specified").
+# Directory.Build.props is needed for the analyzer/nullable/warnings settings
+# that may affect restore behavior.
 COPY ["FamilyCare.sln", "./"]
+COPY ["Directory.Build.props", "./"]
+COPY ["Directory.Packages.props", "./"]
 COPY ["src/FamilyCare.Domain/FamilyCare.Domain.csproj", "src/FamilyCare.Domain/"]
 COPY ["src/FamilyCare.Application/FamilyCare.Application.csproj", "src/FamilyCare.Application/"]
 COPY ["src/FamilyCare.Infrastructure/FamilyCare.Infrastructure.csproj", "src/FamilyCare.Infrastructure/"]
