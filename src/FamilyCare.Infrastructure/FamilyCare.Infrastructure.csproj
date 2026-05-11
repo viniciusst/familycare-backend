@@ -31,7 +31,7 @@
       Pulled in transitively by JwtBearer/EF Core dependencies.
       Fixed versions: 10.0.6, 9.0.15, 8.0.3 — see GHSA-37gx-xxp4-5rgx.
     -->
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.6" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.7" />
   </ItemGroup>
 
   <ItemGroup>
