@@ -80,9 +80,11 @@ logs/
 
 # =============================================================
 # Local file storage (attachments uploaded in dev)
+# Only the storage/ folder at the repo root — NOT the source folder
+# src/FamilyCare.Infrastructure/Storage/ which contains C# code.
 # =============================================================
-storage/
-uploads/
+/storage/
+/uploads/
 
 # =============================================================
 # Secrets and environment files
