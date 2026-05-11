@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: familycare-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: familycare
+      POSTGRES_USER: familycare
+      POSTGRES_PASSWORD: familycare_dev
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U familycare -d familycare"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - familycare-net
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: familycare-pgadmin
+    restart: unless-stopped
+    environment:
+      # pgAdmin 8+ validates the email TLD against a list — "reserved" TLDs
+      # like .local, .test, .localhost are rejected. Use .com plus the
+      # CHECK_EMAIL_DELIVERABILITY=False flag to skip the MX DNS lookup.
+      PGADMIN_DEFAULT_EMAIL: admin@familycare.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      PGADMIN_CONFIG_CHECK_EMAIL_DELIVERABILITY: "False"
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - familycare-net
+
+  api:
+    build:
+      context: .
+      dockerfile: src/FamilyCare.Api/Dockerfile
+    container_name: familycare-api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=familycare;Username=familycare;Password=familycare_dev"
+      Jwt__Key: "dev-only-key-replace-in-prod-must-be-at-least-32-chars-long"
+    ports:
+      - "8080:8080"
+    volumes:
+      - api_storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - familycare-net
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+  api_storage:
+
+networks:
+  familycare-net:
+    driver: bridge

@@ -1,0 +1,21 @@
+; ============================================================
+; EF Core auto-generated migrations don't follow modern style
+; rules (file-scoped namespaces, static readonly arrays, etc.).
+; Trying to "fix" generated code is a losing battle — every new
+; migration would re-introduce the same warnings.
+;
+; This file disables only the analyzers that conflict with EF's
+; output. Everything else (nullable, real bugs) stays active.
+; ============================================================
+
+[*.cs]
+
+# Style / formatting (cosmetic, EF tools won't follow these)
+dotnet_diagnostic.IDE0005.severity = none   # Unnecessary using directives
+dotnet_diagnostic.IDE0161.severity = none   # Convert to file-scoped namespace
+dotnet_diagnostic.IDE0130.severity = none   # Namespace does not match folder structure
+
+# Performance suggestions (irrelevant — migrations run once)
+dotnet_diagnostic.CA1861.severity = none    # Prefer static readonly fields over constant arrays
+dotnet_diagnostic.CA1822.severity = none    # Mark members as static
+dotnet_diagnostic.CA1062.severity = none    # Validate arguments of public methods

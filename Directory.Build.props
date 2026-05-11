@@ -1,0 +1,34 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <NeutralLanguage>en</NeutralLanguage>
+
+    <!--
+      Required for IDE0005 (remove unused usings) to run at build time.
+      Without this the analyzer fails with "EnableGenerateDocumentationFile".
+      Ref: https://github.com/dotnet/roslyn/issues/41640
+    -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!--
+      Suppress the "missing XML comment for publicly visible type" warning
+      that comes for free with GenerateDocumentationFile=true.
+      We don't want to force XML docs on every public member.
+    -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>Vinicius</Authors>
+    <Company>FamilyCare</Company>
+    <Product>FamilyCare</Product>
+    <Copyright>Copyright © FamilyCare $([System.DateTime]::Now.Year)</Copyright>
+  </PropertyGroup>
+
+</Project>

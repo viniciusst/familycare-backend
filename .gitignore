@@ -1,0 +1,126 @@
+# =============================================================
+# .NET build artifacts
+# =============================================================
+bin/
+obj/
+out/
+build/
+publish/
+[Dd]ebug/
+[Rr]elease/
+[Bb]uilds/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.pdb
+*.dll
+*.exe
+*.so
+*.dylib
+
+# Build cache
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.binlog
+
+# =============================================================
+# IDE-specific files
+# =============================================================
+# Visual Studio
+.vs/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# Vim / Emacs
+*.swp
+*.swo
+*~
+\#*\#
+
+# =============================================================
+# Test results / coverage
+# =============================================================
+[Tt]est[Rr]esult*/
+[Cc]overage*/
+*.coverage
+*.coveragexml
+coverage.opencover.xml
+coverage.cobertura.xml
+TestResults/
+*.trx
+
+# =============================================================
+# NuGet
+# =============================================================
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# =============================================================
+# Logs and runtime files
+# =============================================================
+*.log
+logs/
+*.tmp
+*.bak
+*.backup
+
+# =============================================================
+# Local file storage (attachments uploaded in dev)
+# =============================================================
+storage/
+uploads/
+
+# =============================================================
+# Secrets and environment files
+# =============================================================
+# Secrets / env
+*.secrets.json
+secrets.json
+.env
+.env.local
+.env.*.local
+appsettings.*.local.json
+!appsettings.Development.template.json
+
+# User Secrets (.NET) and local launch settings
+**/Properties/launchSettings.json
+
+# =============================================================
+# OS files
+# =============================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# =============================================================
+# Docker
+# =============================================================
+docker-compose.override.yml
+.docker/
+
+# =============================================================
+# Database dumps and backups
+# =============================================================
+*.bak
+*.sql.gz
+*.dump
+*.backup
