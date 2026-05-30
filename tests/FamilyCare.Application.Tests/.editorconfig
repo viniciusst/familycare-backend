@@ -1,0 +1,11 @@
+; ============================================================
+; Test projects use underscored method names by convention
+; (Subject_State_ExpectedBehavior). Disable the corresponding
+; analyzer rule. IDE0005 demoted to suggestion to avoid false
+; positives from global usings declared in a separate file.
+; ============================================================
+
+[*.cs]
+
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.IDE0005.severity = suggestion
