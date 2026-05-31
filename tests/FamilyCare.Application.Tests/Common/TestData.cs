@@ -27,10 +27,6 @@ internal static class TestData
             ownerDisplayName: ownerDisplayName,
             ownerBirthDate: ownerBirthDate ?? new DateOnly(1985, 1, 15));
 
-    /// <summary>
-    /// Builds a family with the given owner plus one accepted member.
-    /// Returns the family, owner user id, owner member id, secondary user id, secondary member id.
-    /// </summary>
     public static (Family Family, UserId OwnerUserId, FamilyMemberId OwnerMemberId,
                    UserId SecondaryUserId, FamilyMemberId SecondaryMemberId)
         FamilyWithTwoMembers(Role secondaryRole = Role.Adult)
@@ -47,4 +43,48 @@ internal static class TestData
 
         return (family, ownerUserId, ownerMemberId, secondaryUserId, secondaryMemberId);
     }
+
+    // ---- Medical entity factories ----
+
+    public static Appointment AnyAppointment(FamilyMemberId? memberId = null)
+        => Appointment.Schedule(
+            memberId ?? FamilyMemberId.New(),
+            DateTime.UtcNow.AddDays(7),
+            "Cardiology",
+            "Dr. House",
+            "Clinic A",
+            null);
+
+    public static Exam AnyExam(FamilyMemberId? memberId = null)
+        => Exam.Register(
+            memberId ?? FamilyMemberId.New(),
+            DateOnly.FromDateTime(DateTime.UtcNow),
+            "Blood Test",
+            "LabCorp",
+            "Initial results",
+            "Dr. Smith");
+
+    public static Vaccine AnyVaccine(FamilyMemberId? memberId = null)
+        => Vaccine.Register(
+            memberId ?? FamilyMemberId.New(),
+            "COVID-19 Pfizer",
+            DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-1)),
+            "Pfizer", "ABC123", 2, null, null);
+
+    public static Allergy AnyAllergy(
+        FamilyMemberId? memberId = null,
+        AllergySeverity severity = AllergySeverity.Mild)
+        => Allergy.Register(
+            memberId ?? FamilyMemberId.New(),
+            "Peanuts",
+            severity,
+            "Hives",
+            new DateOnly(2010, 5, 15));
+
+    public static ChronicCondition AnyChronicCondition(FamilyMemberId? memberId = null)
+        => ChronicCondition.Register(
+            memberId ?? FamilyMemberId.New(),
+            "Hypertension",
+            new DateOnly(2020, 1, 1),
+            "Mild");
 }
