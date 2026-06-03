@@ -1,0 +1,65 @@
+version: 2
+updates:
+  # NuGet packages (.NET)
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "nuget"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      # All Microsoft / EF Core / Npgsql packages share transitive
+      # dependencies on Microsoft.Extensions.*, so they MUST be
+      # updated together — otherwise you get NU1605 downgrade errors
+      # when only some of them bump.
+      dotnet-platform:
+        patterns:
+          - "Microsoft.*"
+          - "Npgsql*"
+          - "EFCore.*"
+          - "System.IdentityModel.*"
+          - "System.Security.Cryptography.*"
+      test-tooling:
+        patterns:
+          - "xunit*"
+          - "Moq*"
+          - "FluentAssertions*"
+          - "AutoFixture*"
+          - "Testcontainers*"
+          - "coverlet.*"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+    groups:
+      gh-actions:
+        patterns:
+          - "*"
+
+  # Docker base images
+  - package-ecosystem: "docker"
+    directory: "/src/FamilyCare.Api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "chore(docker)"

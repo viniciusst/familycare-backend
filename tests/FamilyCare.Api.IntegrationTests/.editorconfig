@@ -1,0 +1,4 @@
+; Underscored test method names are conventional.
+[*.cs]
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.IDE0005.severity = suggestion

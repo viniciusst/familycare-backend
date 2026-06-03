@@ -1,0 +1,8 @@
+global using Xunit;
+global using Moq;
+global using FamilyCare.Domain.Common;
+global using FamilyCare.Domain.Identity;
+global using FamilyCare.Domain.FamilyManagement;
+global using FamilyCare.Domain.MedicalHistory;
+global using FamilyCare.Application.Common.Abstractions;
+global using FamilyCare.Application.Common.Exceptions;

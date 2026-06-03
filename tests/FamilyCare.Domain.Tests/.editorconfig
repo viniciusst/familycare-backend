@@ -1,0 +1,15 @@
+; ============================================================
+; Test projects use underscored method names by convention
+; (Subject_State_Behavior). Disable the corresponding rule.
+;
+; IDE0005 also fires false-positives when global usings are
+; declared in a separate file (it can't see them at analysis time).
+; ============================================================
+
+[*.cs]
+
+# Test method naming convention uses underscores intentionally
+dotnet_diagnostic.CA1707.severity = none
+
+# Global usings produce false IDE0005 positives in some scenarios
+dotnet_diagnostic.IDE0005.severity = suggestion

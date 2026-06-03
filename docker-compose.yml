@@ -1,3 +1,14 @@
+# =============================================================
+# FamilyCare - Local Development stack
+#
+# ⚠️  This file is for LOCAL DEVELOPMENT only.
+# All credentials below are intentionally trivial and have no
+# value outside this dev environment. Do NOT use this file as-is
+# in production. For production, use proper secret management
+# (Azure Key Vault, AWS Secrets Manager, Docker Swarm secrets,
+# Kubernetes Secrets, etc.) and a separate compose/manifest.
+# =============================================================
+
 services:
   postgres:
     image: postgres:17-alpine
