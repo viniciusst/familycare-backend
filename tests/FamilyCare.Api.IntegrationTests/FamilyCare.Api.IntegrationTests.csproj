@@ -12,6 +12,8 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Moq" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Respawn" />
     <PackageReference Include="coverlet.collector">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -20,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\FamilyCare.Api\FamilyCare.Api.csproj" />
+    <ProjectReference Include="..\..\src\FamilyCare.Infrastructure\FamilyCare.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
