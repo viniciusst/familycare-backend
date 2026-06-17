@@ -43,11 +43,10 @@ public sealed class FamilyCareApiFactory : WebApplicationFactory<Program>, IAsyn
     private const string TestIssuer = "FamilyCare.Api";
     private const string TestAudience = "FamilyCare.Clients";
 
-    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-        .WithImage("postgres:17-alpine")
-        .WithDatabase("familycare_tests")
-        .WithUsername("familycare")
-        .WithPassword("familycare_test")
+    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("postgres:17-alpine")
+        .WithDatabase("familycare_test")
+        .WithUsername("postgres")
+        .WithPassword("postgres")
         .Build();
 
     private Respawner? _respawner;
