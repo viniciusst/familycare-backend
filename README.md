@@ -1,6 +1,6 @@
 # FamilyCare API 🏥
 
-[![CI](https://github.com/viniciusst/familycare-backend/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/viniciusst/familycare-backend/actions/workflows/ci.yml)
+[![CI](https://github.com/viniciusst/familycare-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/viniciusst/familycare-backend/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet)](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 [![PostgreSQL 17](https://img.shields.io/badge/PostgreSQL-17-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
