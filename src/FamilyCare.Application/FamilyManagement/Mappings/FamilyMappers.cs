@@ -1,4 +1,5 @@
 using FamilyCare.Application.FamilyManagement.Dtos;
+using FamilyCare.Domain.Common;
 using FamilyCare.Domain.FamilyManagement;
 
 namespace FamilyCare.Application.FamilyManagement.Mappings;
@@ -37,6 +38,18 @@ internal static class FamilyMappers
     public static InvitationDto ToDto(this Invitation invitation)
         => new(
             invitation.Id,
+            invitation.Email.Value,
+            invitation.ProposedRole,
+            invitation.ProposedRelationship,
+            invitation.Status,
+            invitation.CreatedAt,
+            invitation.ExpiresAt);
+    public static InvitationDetailsDto ToDetailsDto(
+        this Invitation invitation, FamilyId familyId, string familyName) =>
+        new(
+            invitation.Id,
+            familyId,
+            familyName,
             invitation.Email.Value,
             invitation.ProposedRole,
             invitation.ProposedRelationship,

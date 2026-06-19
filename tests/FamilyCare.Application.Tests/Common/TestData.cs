@@ -87,4 +87,18 @@ internal static class TestData
             "Hypertension",
             new DateOnly(2020, 1, 1),
             "Mild");
+
+    public static Invitation AnyInvitation(
+        Family family,
+        Email? email = null,
+        Role proposedRole = Role.Adult,
+        RelationshipType proposedRelationship = RelationshipType.Spouse,
+        TimeSpan? ttl = null)
+    {
+        return family.InviteMember(
+            email ?? Email.Create("invitee@example.com"),
+            proposedRole,
+            proposedRelationship,
+            ttl ?? TimeSpan.FromDays(7));
+    }
 }

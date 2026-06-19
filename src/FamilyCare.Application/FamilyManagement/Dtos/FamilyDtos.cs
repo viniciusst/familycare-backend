@@ -41,3 +41,14 @@ public sealed record InvitationDto(
     InvitationStatus Status,
     DateTime CreatedAt,
     DateTime ExpiresAt);
+
+public sealed record InvitationDetailsDto(
+    InvitationId Id,
+    FamilyId FamilyId,
+    string FamilyName,
+    string Email,
+    Role ProposedRole,
+    RelationshipType ProposedRelationship,
+    InvitationStatus Status,
+    DateTime CreatedAt,
+    DateTime ExpiresAt);

@@ -4,8 +4,10 @@ using FamilyCare.Application.FamilyManagement.Commands.RenameFamily;
 using FamilyCare.Application.FamilyManagement.Commands.TransferOwnership;
 using FamilyCare.Application.FamilyManagement.Dtos;
 using FamilyCare.Application.FamilyManagement.Queries.GetFamilyById;
+using FamilyCare.Application.FamilyManagement.Queries.GetFamilyInvitations;
 using FamilyCare.Application.FamilyManagement.Queries.GetMyFamilies;
 using FamilyCare.Domain.Common;
+using FamilyCare.Domain.FamilyManagement;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,12 +17,12 @@ public static class FamilyEndpoints
 {
     public static IEndpointRouteBuilder MapFamilyEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/v1/families")
+        var familyScoped = app.MapGroup("/api/v1/families")
             .WithTags("Families")
             .RequireAuthorization();
 
         // POST /api/v1/families
-        group.MapPost("/", async (
+        familyScoped.MapPost("/", async (
             [FromBody] CreateFamilyCommand command,
             ISender sender,
             CancellationToken ct) =>
@@ -34,7 +36,7 @@ public static class FamilyEndpoints
         .ProducesValidationProblem();
 
         // GET /api/v1/families
-        group.MapGet("/", async (
+        familyScoped.MapGet("/", async (
             ISender sender,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 20,
@@ -48,7 +50,7 @@ public static class FamilyEndpoints
         .Produces<PagedResult<FamilySummaryDto>>();
 
         // GET /api/v1/families/{id}
-        group.MapGet("/{id:guid}", async (
+        familyScoped.MapGet("/{id:guid}", async (
             Guid id,
             ISender sender,
             CancellationToken ct) =>
@@ -63,7 +65,7 @@ public static class FamilyEndpoints
         .ProducesProblem(StatusCodes.Status404NotFound);
 
         // PATCH /api/v1/families/{id}
-        group.MapPatch("/{id:guid}", async (
+        familyScoped.MapPatch("/{id:guid}", async (
             Guid id,
             [FromBody] RenameFamilyRequest request,
             ISender sender,
@@ -79,7 +81,7 @@ public static class FamilyEndpoints
         .ProducesProblem(StatusCodes.Status403Forbidden);
 
         // POST /api/v1/families/{id}/transfer-ownership
-        group.MapPost("/{id:guid}/transfer-ownership", async (
+        familyScoped.MapPost("/{id:guid}/transfer-ownership", async (
             Guid id,
             [FromBody] TransferOwnershipRequest request,
             ISender sender,
@@ -97,6 +99,26 @@ public static class FamilyEndpoints
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status403Forbidden)
         .ProducesProblem(StatusCodes.Status404NotFound);
+
+        // GET /api/v1/families/{familyId}/invitations  (admin view)
+        familyScoped.MapGet("/{familyId:guid}/invitations", async (
+            Guid familyId,
+            ISender sender,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            [FromQuery] InvitationStatus? status = null,
+            CancellationToken ct = default) =>
+        {
+            var result = await sender.Send(
+                new GetFamilyInvitationsQuery(
+                    FamilyId.From(familyId), page, pageSize, status),
+                ct);
+            return Results.Ok(result);
+        })
+        .WithName("GetFamilyInvitations")
+        .WithSummary("Lists invitations of a family. Owner/Admin only.")
+        .Produces<PagedResult<InvitationDto>>()
+        .ProducesProblem(StatusCodes.Status403Forbidden);
 
         return app;
     }
