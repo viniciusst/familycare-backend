@@ -45,7 +45,7 @@ public sealed class User : AggregateRoot<UserId>
 
         var user = new User(
             UserId.New(),
-            email,
+            email = Email.Create(email.Value),
             passwordHash,
             preferredLanguage,
             DateTime.UtcNow);

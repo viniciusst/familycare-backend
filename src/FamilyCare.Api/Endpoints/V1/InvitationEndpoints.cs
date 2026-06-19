@@ -1,7 +1,11 @@
+using FamilyCare.Application.Common.Pagination;
 using FamilyCare.Application.FamilyManagement.Commands.AcceptInvitation;
 using FamilyCare.Application.FamilyManagement.Commands.DeclineInvitation;
 using FamilyCare.Application.FamilyManagement.Commands.InviteMember;
 using FamilyCare.Application.FamilyManagement.Commands.RevokeInvitation;
+using FamilyCare.Application.FamilyManagement.Dtos;
+using FamilyCare.Application.FamilyManagement.Queries.GetInvitationById;
+using FamilyCare.Application.FamilyManagement.Queries.GetMyInvitations;
 using FamilyCare.Domain.Common;
 using FamilyCare.Domain.FamilyManagement;
 using MediatR;
@@ -103,6 +107,43 @@ public static class InvitationEndpoints
         .WithName("DeclineInvitation")
         .WithSummary("Declines a pending invitation.")
         .Produces(StatusCodes.Status204NoContent)
+        .ProducesProblem(StatusCodes.Status403Forbidden)
+        .ProducesProblem(StatusCodes.Status404NotFound);
+        // Add inside MapInvitationEndpoints, alongside accept/decline:
+
+        // GET /api/v1/invitations  (current user's inbox)
+        app.MapGet("/api/v1/invitations", async (
+            ISender sender,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            [FromQuery] InvitationStatus? status = null,
+            CancellationToken ct = default) =>
+        {
+            var result = await sender.Send(
+                new GetMyInvitationsQuery(page, pageSize, status), ct);
+            return Results.Ok(result);
+        })
+        .WithTags("Invitations")
+        .WithName("GetMyInvitations")
+        .WithSummary("Lists invitations addressed to the authenticated user (by email).")
+        .RequireAuthorization()
+        .Produces<PagedResult<InvitationDetailsDto>>();
+
+        // GET /api/v1/invitations/{invitationId}
+        app.MapGet("/api/v1/invitations/{invitationId:guid}", async (
+            Guid invitationId,
+            ISender sender,
+            CancellationToken ct) =>
+        {
+            var result = await sender.Send(
+                new GetInvitationByIdQuery(InvitationId.From(invitationId)), ct);
+            return Results.Ok(result);
+        })
+        .WithTags("Invitations")
+        .WithName("GetInvitationById")
+        .WithSummary("Returns a single invitation. Visible to the invitee or to Owner/Admin.")
+        .RequireAuthorization()
+        .Produces<InvitationDetailsDto>()
         .ProducesProblem(StatusCodes.Status403Forbidden)
         .ProducesProblem(StatusCodes.Status404NotFound);
 
