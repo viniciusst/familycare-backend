@@ -86,6 +86,65 @@ public sealed class Appointment : AggregateRoot<AppointmentId>
         ScheduledAt = newScheduledAt;
     }
 
+    public void UpdateDetails(
+    string? doctorName,
+    string? specialty,
+    string? location,
+    string? notes)
+    {
+        EnsureStatus(AppointmentStatus.Scheduled);
+
+        if (doctorName is null && specialty is null && location is null && notes is null)
+        {
+            throw new BusinessRuleViolationException(
+                "appointment.no_fields_to_update",
+                "At least one field must be provided to update.");
+        }
+
+        if (doctorName is not null)
+        {
+            DoctorName = ValidateRequired(
+                doctorName, 120,
+                "appointment.doctor_required",
+                "appointment.doctor_too_long",
+                "Doctor name");
+        }
+
+        if (specialty is not null)
+        {
+            Specialty = ValidateRequired(
+                specialty, 80,
+                "appointment.specialty_required",
+                "appointment.specialty_too_long",
+                "Specialty");
+        }
+
+        if (location is not null)
+        {
+            if (location.Length > 200)
+            {
+                throw new InvalidEntityStateException(
+                    "appointment.location_too_long",
+                    "Location exceeds 200 characters.");
+            }
+            Location = TrimOrNull(location);
+        }
+
+        if (notes is not null)
+        {
+            if (notes.Length > 2000)
+            {
+                throw new InvalidEntityStateException(
+                    "appointment.notes_too_long",
+                    "Notes exceed 2000 characters.");
+            }
+            Notes = TrimOrNull(notes);
+        }
+
+        RaiseDomainEvent(new AppointmentDetailsUpdatedEvent(
+            Id, FamilyMemberId, DateTime.UtcNow));
+    }
+
     private void EnsureStatus(AppointmentStatus expected)
     {
         if (Status != expected)

@@ -5,11 +5,11 @@ using FamilyCare.Application.MedicalHistory.Commands.RescheduleAppointment;
 using FamilyCare.Application.MedicalHistory.Commands.ScheduleAppointment;
 using FamilyCare.Application.MedicalHistory.Dtos;
 using FamilyCare.Application.MedicalHistory.Queries.GetAppointmentsByMember;
-using FamilyCare.Domain.Common;
-using FamilyCare.Domain.MedicalHistory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-
+using FamilyCare.Domain.Common;
+using FamilyCare.Domain.MedicalHistory;
+using FamilyCare.Application.MedicalHistory.Commands.UpdateAppointmentDetails;
 namespace FamilyCare.Api.Endpoints.V1;
 
 public static class AppointmentEndpoints
@@ -122,6 +122,31 @@ public static class AppointmentEndpoints
         .ProducesValidationProblem()
         .ProducesProblem(StatusCodes.Status404NotFound);
 
+
+        // PATCH /api/v1/appointments/{id}/details
+        appointmentScoped.MapPatch("/{id:guid}/details", async (
+            Guid id,
+            [FromBody] UpdateAppointmentDetailsRequest request,
+            ISender sender,
+            CancellationToken ct) =>
+        {
+            await sender.Send(
+                new UpdateAppointmentDetailsCommand(
+                    AppointmentId.From(id),
+                    request.DoctorName,
+                    request.Specialty,
+                    request.Location,
+                    request.Notes),
+                ct);
+            return Results.NoContent();
+        })
+        .WithName("UpdateAppointmentDetails")
+        .WithSummary("Updates editable details (doctor, specialty, location, notes) of a scheduled appointment.")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem()
+        .ProducesProblem(StatusCodes.Status403Forbidden)
+        .ProducesProblem(StatusCodes.Status404NotFound);
+
         return app;
     }
 
@@ -135,4 +160,10 @@ public static class AppointmentEndpoints
     public sealed record CompleteAppointmentRequest(string? ClosingNotes);
 
     public sealed record RescheduleAppointmentRequest(DateTime NewScheduledAt);
+
+    public sealed record UpdateAppointmentDetailsRequest(
+    string? DoctorName,
+    string? Specialty,
+    string? Location,
+    string? Notes);
 }
