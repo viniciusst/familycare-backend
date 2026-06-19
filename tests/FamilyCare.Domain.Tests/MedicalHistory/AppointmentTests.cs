@@ -1,3 +1,5 @@
+using FamilyCare.Domain.MedicalHistory.Events;
+
 namespace FamilyCare.Domain.Tests.MedicalHistory;
 
 public class AppointmentTests
@@ -93,5 +95,117 @@ public class AppointmentTests
 
         Assert.Throws<BusinessRuleViolationException>(
             () => appointment.Reschedule(DateTime.UtcNow.AddDays(14)));
+    }
+
+    [Fact]
+    public void UpdateDetails_WithAllFields_UpdatesAppointment()
+    {
+        var appointment = Appointment.Schedule(
+            FamilyMemberId.New(),
+            DateTime.UtcNow.AddDays(7),
+            "Dentistry",
+            "Dr. Old");
+
+        appointment.UpdateDetails(
+            doctorName: "Dr. New",
+            specialty: "Cardiology",
+            location: "New Clinic",
+            notes: "Bring lab results");
+
+        Assert.Equal("Dr. New", appointment.DoctorName);
+        Assert.Equal("Cardiology", appointment.Specialty);
+        Assert.Equal("New Clinic", appointment.Location);
+        Assert.Equal("Bring lab results", appointment.Notes);
+    }
+
+    [Fact]
+    public void UpdateDetails_WithOnlyDoctorName_KeepsOtherFields()
+    {
+        var appointment = Appointment.Schedule(
+            FamilyMemberId.New(),
+            DateTime.UtcNow.AddDays(7),
+            "Dentistry",
+            "Dr. Old",
+            location: "Original Location",
+            notes: "Original Notes");
+
+        appointment.UpdateDetails(doctorName: "Dr. New", null, null, null);
+
+        Assert.Equal("Dr. New", appointment.DoctorName);
+        Assert.Equal("Dentistry", appointment.Specialty);
+        Assert.Equal("Original Location", appointment.Location);
+        Assert.Equal("Original Notes", appointment.Notes);
+    }
+
+    [Fact]
+    public void UpdateDetails_WithEmptyLocation_SetsLocationToNull()
+    {
+        var appointment = Appointment.Schedule(
+            FamilyMemberId.New(),
+            DateTime.UtcNow.AddDays(7),
+            "Dentistry",
+            "Dr. Old",
+            location: "Original Location");
+
+        appointment.UpdateDetails(null, null, location: "   ", null);
+
+        Assert.Null(appointment.Location);
+    }
+
+    [Fact]
+    public void UpdateDetails_OnCompletedAppointment_Throws()
+    {
+        var appointment = Appointment.Schedule(
+            FamilyMemberId.New(),
+            DateTime.UtcNow.AddDays(7),
+            "Dentistry",
+            "Dr. Old");
+        appointment.MarkCompleted();
+
+        Assert.Throws<BusinessRuleViolationException>(
+        () => appointment.UpdateDetails("Dr. New", null, null, null));
+    }
+
+    [Fact]
+    public void UpdateDetails_OnCancelledAppointment_Throws()
+    {
+        var appointment = Appointment.Schedule(
+            FamilyMemberId.New(),
+            DateTime.UtcNow.AddDays(7),
+            "Dentistry",
+            "Dr. Old");
+        appointment.Cancel();
+
+        Assert.Throws<BusinessRuleViolationException>(
+            () => appointment.UpdateDetails("Dr. New", null, null, null));
+    }
+
+    [Fact]
+    public void UpdateDetails_WithAllNullFields_Throws()
+    {
+        var appointment = Appointment.Schedule(
+            FamilyMemberId.New(),
+            DateTime.UtcNow.AddDays(7),
+            "Dentistry",
+            "Dr. Old");
+
+        Assert.Throws<BusinessRuleViolationException>(
+            () => appointment.UpdateDetails(null, null, null, null));
+    }
+
+    [Fact]
+    public void UpdateDetails_RaisesDomainEvent()
+    {
+        var appointment = Appointment.Schedule(
+            FamilyMemberId.New(),
+            DateTime.UtcNow.AddDays(7),
+            "Dentistry",
+            "Dr. Old");
+        appointment.ClearDomainEvents();
+
+        appointment.UpdateDetails("Dr. New", null, null, null);
+
+        Assert.Single(appointment.DomainEvents);
+        Assert.IsType<AppointmentDetailsUpdatedEvent>(appointment.DomainEvents.First());
     }
 }

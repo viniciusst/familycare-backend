@@ -19,6 +19,11 @@ public sealed record AppointmentCancelledEvent(
     FamilyMemberId FamilyMemberId,
     DateTime OccurredOn) : IDomainEvent;
 
+public sealed record AppointmentDetailsUpdatedEvent(
+AppointmentId AppointmentId,
+FamilyMemberId FamilyMemberId,
+DateTime OccurredOn) : IDomainEvent;
+
 public sealed record ExamRegisteredEvent(
     ExamId ExamId,
     FamilyMemberId FamilyMemberId,
