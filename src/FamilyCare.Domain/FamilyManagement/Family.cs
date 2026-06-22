@@ -227,6 +227,21 @@ public sealed class Family : AggregateRoot<FamilyId>
         member.ChangeRelationship(relationship);
     }
 
+    public void ChangeMemberBirthDate(FamilyMemberId memberId, DateOnly newBirthDate)
+    {
+        var member = FindMemberOrThrow(memberId);
+
+        // Birth date in the future doesn't make sense.
+        if (newBirthDate > DateOnly.FromDateTime(DateTime.UtcNow))
+        {
+            throw new InvalidEntityStateException(
+                "family.member.invalid_birth_date",
+                "Birth date cannot be in the future.");
+        }
+
+        member.ChangeBirthDate(newBirthDate);
+    }
+
     public void TransferOwnership(FamilyMemberId newOwnerMemberId)
     {
         var newOwner = FindMemberOrThrow(newOwnerMemberId);
