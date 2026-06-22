@@ -113,6 +113,8 @@ public sealed class FamilyMember : Entity<FamilyMemberId>
         rule.Change(newScope, newAllowedMemberIds);
     }
 
+    public void ChangeBirthDate(DateOnly newBirthDate) => BirthDate = newBirthDate;
+
     public PrivacyRule? FindPrivacyRule(DataCategory category)
         => _privacyRules.FirstOrDefault(r => r.Category == category);
 }

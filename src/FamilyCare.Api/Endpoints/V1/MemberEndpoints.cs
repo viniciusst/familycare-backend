@@ -1,6 +1,7 @@
 using FamilyCare.Application.FamilyManagement.Commands.ChangeMemberRole;
 using FamilyCare.Application.FamilyManagement.Commands.ChangePrivacyRule;
 using FamilyCare.Application.FamilyManagement.Commands.RemoveMember;
+using FamilyCare.Application.FamilyManagement.Commands.UpdateMemberDetails;
 using FamilyCare.Application.FamilyManagement.Dtos;
 using FamilyCare.Application.FamilyManagement.Queries.GetFamilyMembers;
 using FamilyCare.Domain.Common;
@@ -106,6 +107,30 @@ public static class MemberEndpoints
         .ProducesValidationProblem()
         .ProducesProblem(StatusCodes.Status403Forbidden);
 
+        group.MapPatch("/{memberId:guid}/details", async (
+            Guid familyId,
+            Guid memberId,
+            [FromBody] UpdateMemberDetailsRequest body,
+            ISender sender,
+            CancellationToken ct) =>
+        {
+            await sender.Send(
+                new UpdateMemberDetailsCommand(
+                    FamilyId.From(familyId),
+                    FamilyMemberId.From(memberId),
+                    body.DisplayName,
+                    body.BirthDate,
+                    body.Relationship),
+                ct);
+            return Results.NoContent();
+        })
+        .WithName("UpdateMemberDetails")
+        .WithSummary("Updates editable details (displayName, birthDate, relationship) of a family member.")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem()
+        .ProducesProblem(StatusCodes.Status403Forbidden)
+        .ProducesProblem(StatusCodes.Status404NotFound);
+
         return app;
     }
 
@@ -114,4 +139,9 @@ public static class MemberEndpoints
     public sealed record ChangePrivacyRuleRequest(
         VisibilityScope NewScope,
         IReadOnlyCollection<Guid>? AllowedMemberIds);
+
+    public sealed record UpdateMemberDetailsRequest(
+        string? DisplayName,
+        DateOnly? BirthDate,
+        RelationshipType? Relationship);
 }
