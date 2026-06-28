@@ -76,4 +76,39 @@ public sealed class Vaccine : AggregateRoot<VaccineId>
 
         return vaccine;
     }
+
+    public void UpdateDetails(
+        string newName,
+        DateOnly newAppliedAt,
+        string? newManufacturer,
+        string? newBatchNumber,
+        int? newDoseNumber,
+        DateOnly? newNextDoseDue,
+        string? newNotes)
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+        {
+            throw new InvalidEntityStateException(
+                "vaccine.name_required", "Vaccine name is required.");
+        }
+        if (newDoseNumber is not null && newDoseNumber.Value < 1)
+        {
+            throw new InvalidEntityStateException(
+                "vaccine.invalid_dose", "Dose number must be >= 1.");
+        }
+        if (newNextDoseDue is not null && newNextDoseDue.Value < newAppliedAt)
+        {
+            throw new InvalidEntityStateException(
+                "vaccine.invalid_next_dose",
+                "Next dose date cannot be before the application date.");
+        }
+
+        Name = newName.Trim();
+        AppliedAt = newAppliedAt;
+        Manufacturer = string.IsNullOrWhiteSpace(newManufacturer) ? null : newManufacturer.Trim();
+        BatchNumber = string.IsNullOrWhiteSpace(newBatchNumber) ? null : newBatchNumber.Trim();
+        DoseNumber = newDoseNumber;
+        NextDoseDue = newNextDoseDue;
+        Notes = string.IsNullOrWhiteSpace(newNotes) ? null : newNotes.Trim();
+    }
 }
