@@ -1,5 +1,6 @@
 using FamilyCare.Application.MedicalHistory.Commands.ChangeAllergySeverity;
 using FamilyCare.Application.MedicalHistory.Commands.RegisterAllergy;
+using FamilyCare.Application.MedicalHistory.Commands.UpdateAllergyDetails;
 using FamilyCare.Application.MedicalHistory.Dtos;
 using FamilyCare.Application.MedicalHistory.Queries.GetAllergiesByMember;
 using FamilyCare.Domain.Common;
@@ -78,6 +79,27 @@ public static class AllergyEndpoints
         .ProducesValidationProblem()
         .ProducesProblem(StatusCodes.Status404NotFound);
 
+        allergyScoped.MapPatch("/{id:guid}/details", async (
+            Guid id,
+            [FromBody] UpdateAllergyDetailsRequest request,
+            ISender sender,
+            CancellationToken ct) =>
+        {
+            await sender.Send(
+                new UpdateAllergyDetailsCommand(
+                    AllergyId.From(id),
+                    request.NewSubstance,
+                    request.NewReaction,
+                    request.NewFirstObservedAt),
+                ct);
+            return Results.NoContent();
+        })
+        .WithName("UpdateAllergyDetails")
+        .WithSummary("Updates an allergy's details.")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem()
+        .ProducesProblem(StatusCodes.Status404NotFound);
+
         return app;
     }
 
@@ -86,6 +108,11 @@ public static class AllergyEndpoints
         AllergySeverity Severity,
         string? Reaction = null,
         DateOnly? FirstObservedAt = null);
+
+    public sealed record UpdateAllergyDetailsRequest(
+        string NewSubstance,
+        string? NewReaction = null,
+        DateOnly? NewFirstObservedAt = null);
 
     public sealed record ChangeAllergySeverityRequest(AllergySeverity NewSeverity);
 }

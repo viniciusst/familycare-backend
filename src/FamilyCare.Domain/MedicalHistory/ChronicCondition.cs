@@ -50,6 +50,22 @@ public sealed class ChronicCondition : AggregateRoot<ChronicConditionId>
         return condition;
     }
 
+    public void UpdateDetails(
+        string newName,
+        DateOnly newDiagnosedAt,
+        string? newNotes)
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+        {
+            throw new InvalidEntityStateException(
+                "chronic_condition.name_required", "Condition name is required.");
+        }
+
+        Name = newName.Trim();
+        DiagnosedAt = newDiagnosedAt;
+        Notes = string.IsNullOrWhiteSpace(newNotes) ? null : newNotes.Trim();
+    }
+
     public void Resolve() => IsActive = false;
 
     public void Reactivate() => IsActive = true;

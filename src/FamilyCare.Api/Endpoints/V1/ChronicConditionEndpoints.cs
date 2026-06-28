@@ -1,5 +1,6 @@
 using FamilyCare.Application.MedicalHistory.Commands.RegisterChronicCondition;
 using FamilyCare.Application.MedicalHistory.Commands.ResolveChronicCondition;
+using FamilyCare.Application.MedicalHistory.Commands.UpdateChronicConditionDetails;
 using FamilyCare.Application.MedicalHistory.Dtos;
 using FamilyCare.Application.MedicalHistory.Queries.GetChronicConditionsByMember;
 using FamilyCare.Domain.Common;
@@ -78,6 +79,27 @@ public static class ChronicConditionEndpoints
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status404NotFound);
 
+        conditionScoped.MapPatch("/{id:guid}/details", async (
+            Guid id,
+            [FromBody] UpdateChronicConditionDetailsRequest request,
+            ISender sender,
+            CancellationToken ct) =>
+        {
+            await sender.Send(
+                new UpdateChronicConditionDetailsCommand(
+                    ChronicConditionId.From(id),
+                    request.NewName,
+                    request.NewDiagnosedAt,
+                    request.NewNotes),
+                ct);
+            return Results.NoContent();
+        })
+        .WithName("UpdateChronicConditionDetails")
+        .WithSummary("Updates a chronic condition's details.")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem()
+        .ProducesProblem(StatusCodes.Status404NotFound);
+
         return app;
     }
 
@@ -85,4 +107,9 @@ public static class ChronicConditionEndpoints
         string Name,
         DateOnly DiagnosedAt,
         string? Notes = null);
+
+    public sealed record UpdateChronicConditionDetailsRequest(
+        string NewName,
+        DateOnly NewDiagnosedAt,
+        string? NewNotes = null);
 }

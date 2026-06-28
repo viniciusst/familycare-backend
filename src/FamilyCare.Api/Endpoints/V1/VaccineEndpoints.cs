@@ -1,5 +1,6 @@
 using FamilyCare.Application.Common.Pagination;
 using FamilyCare.Application.MedicalHistory.Commands.RegisterVaccine;
+using FamilyCare.Application.MedicalHistory.Commands.UpdateVaccineDetails;
 using FamilyCare.Application.MedicalHistory.Dtos;
 using FamilyCare.Application.MedicalHistory.Queries.GetVaccinesByMember;
 using FamilyCare.Domain.Common;
@@ -60,8 +61,37 @@ public static class VaccineEndpoints
         .Produces<PagedResult<VaccineDto>>()
         .ProducesProblem(StatusCodes.Status403Forbidden);
 
+        var vaccineScoped = app.MapGroup("/api/v1/vaccines")
+            .WithTags("Vaccines")
+            .RequireAuthorization();
+
+        vaccineScoped.MapPatch("/{id:guid}/details", async (
+            Guid id,
+            [FromBody] UpdateVaccineDetailsRequest request,
+            ISender sender,
+            CancellationToken ct) =>
+        {
+            await sender.Send(
+                new UpdateVaccineDetailsCommand(
+                    VaccineId.From(id),
+                    request.NewName,
+                    request.NewAppliedAt,
+                    request.NewManufacturer,
+                    request.NewBatchNumber,
+                    request.NewDoseNumber,
+                    request.NewNextDoseDue,
+                    request.NewNotes),
+                ct);
+            return Results.NoContent();
+        })
+        .WithName("UpdateVaccineDetails")
+        .WithSummary("Updates a vaccine record's details.")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem()
+        .ProducesProblem(StatusCodes.Status404NotFound);
+
         return app;
-    }
+    }    
 
     public sealed record RegisterVaccineRequest(
         string Name,
@@ -71,4 +101,13 @@ public static class VaccineEndpoints
         int? DoseNumber = null,
         DateOnly? NextDoseDue = null,
         string? Notes = null);
+        
+    public sealed record UpdateVaccineDetailsRequest(
+        string NewName,
+        DateOnly NewAppliedAt,
+        string? NewManufacturer = null,
+        string? NewBatchNumber = null,
+        int? NewDoseNumber = null,
+        DateOnly? NewNextDoseDue = null,
+        string? NewNotes = null);
 }

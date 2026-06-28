@@ -52,5 +52,21 @@ public sealed class Allergy : AggregateRoot<AllergyId>
         return allergy;
     }
 
+    public void UpdateDetails(
+        string newSubstance,
+        string? newReaction,
+        DateOnly? newFirstObservedAt)
+    {
+        if (string.IsNullOrWhiteSpace(newSubstance))
+        {
+            throw new InvalidEntityStateException(
+                "allergy.substance_required", "Substance is required.");
+        }
+
+        Substance = newSubstance.Trim();
+        Reaction = string.IsNullOrWhiteSpace(newReaction) ? null : newReaction.Trim();
+        FirstObservedAt = newFirstObservedAt;
+    }
+
     public void ChangeSeverity(AllergySeverity newSeverity) => Severity = newSeverity;
 }
