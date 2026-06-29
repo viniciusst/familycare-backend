@@ -76,6 +76,7 @@ app.MapAuthEndpoints();
 app.MapFamilyEndpoints();
 app.MapInvitationEndpoints();
 app.MapMemberEndpoints();
+app.MapPrivacyRuleEndpoints();
 
 // MedicalHistory
 app.MapAppointmentEndpoints();
