@@ -32,9 +32,8 @@ public sealed class PrivacyPolicyEvaluator(IFamilyRepository familyRepository)
         }
 
         var rule = owner.FindPrivacyRule(category)
-            ?? throw new ForbiddenException(
-                $"No privacy rule defined for category '{category}'.");
-
+        ?? PrivacyRule.CreateDefault(owner.Id, category);
+        
         return rule.CanBeSeenBy(requester.Id, requester.IsAdmin);
     }
 
