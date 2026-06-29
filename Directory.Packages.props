@@ -48,7 +48,7 @@
 
     <!-- API tooling -->
     <PackageVersion Include="Scalar.AspNetCore" Version="2.16.3" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.1" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
 
     <!-- Test tooling -->
