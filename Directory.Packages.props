@@ -43,8 +43,8 @@
 
     <!-- App tooling -->
     <PackageVersion Include="MediatR" Version="12.4.1" />
-    <PackageVersion Include="FluentValidation" Version="11.11.0" />
-    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+    <PackageVersion Include="FluentValidation" Version="12.2.0" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
 
     <!-- API tooling -->
     <PackageVersion Include="Scalar.AspNetCore" Version="2.16.6" />
